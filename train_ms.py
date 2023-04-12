@@ -229,10 +229,13 @@ def train_and_evaluate(rank, epoch, hps, nets, optims, schedulers, scaler, loade
 
       if global_step % hps.train.eval_interval == 0:
         evaluate(hps, net_g, eval_loader, writer_eval)
-        utils.save_checkpoint(net_g, optim_g, hps.train.learning_rate, epoch, os.path.join(hps.model_dir, "G_{}.pth".format(global_step)))
-        utils.save_checkpoint(net_d, optim_d, hps.train.learning_rate, epoch, os.path.join(hps.model_dir, "D_{}.pth".format(global_step)))
-        old_g=os.path.join(hps.model_dir, "G_{}.pth".format(global_step-2000))
-        old_d=os.path.join(hps.model_dir, "D_{}.pth".format(global_step-2000))
+        curStep = global_step
+        # curStep = global_step % 3
+        utils.save_checkpoint(net_g, optim_g, hps.train.learning_rate, epoch, os.path.join(hps.model_dir, "G_{}.pth".format(curStep)))
+        utils.save_checkpoint(net_d, optim_d, hps.train.learning_rate, epoch, os.path.join(hps.model_dir, "D_{}.pth".format(curStep)))
+        oldStep = global_step - eval_interval
+        old_g=os.path.join(hps.model_dir, "G_{}.pth".format(oldStep))
+        old_d=os.path.join(hps.model_dir, "D_{}.pth".format(oldStep))
         if os.path.exists(old_g):
           os.remove(old_g)
         if os.path.exists(old_d):
